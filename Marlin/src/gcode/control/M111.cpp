@@ -49,13 +49,13 @@ void GcodeSuite::M111() {
     LOOP_L_N(i, COUNT(debug_strings)) {
       if (TEST(marlin_debug_flags, i)) {
         if (comma++) SERIAL_CHAR(',');
-        serialprintPGM((char*)pgm_read_ptr(&debug_strings[i]));
+        SERIAL_ECHOPGM_P((char*)pgm_read_ptr(&debug_strings[i]));
       }
     }
   }
   else {
     SERIAL_ECHOPGM(STR_DEBUG_OFF);
-    #if !IS_AT90USB
+    #if !defined(__AVR__) || !defined(USBCON)
       #if ENABLED(SERIAL_STATS_RX_BUFFER_OVERRUNS)
         SERIAL_ECHOPAIR("\nBuffer Overruns: ", MYSERIAL0.buffer_overruns());
       #endif
@@ -71,7 +71,7 @@ void GcodeSuite::M111() {
       #if ENABLED(SERIAL_STATS_MAX_RX_QUEUED)
         SERIAL_ECHOPAIR("\nMax RX Queue Size: ", MYSERIAL0.rxMaxEnqueued());
       #endif
-    #endif // !IS_AT90USB
+    #endif // !__AVR__ || !USBCON
   }
   SERIAL_EOL();
 }
